@@ -1,0 +1,29 @@
+{
+  "name": "proximityvc",
+  "version": "1.0.0",
+  "description": "Proximity Voice Chat with Socket.IO",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tinopai/ProximityVC.git"
+  },
+  "keywords": [
+    "voicechat",
+    "chat",
+    "proximity"
+  ],
+  "author": "Tino Pai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tinopai/ProximityVC/issues"
+  },
+  "homepage": "https://github.com/tinopai/ProximityVC#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^2.3.0"
+  }
+}
