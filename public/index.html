@@ -5,6 +5,10 @@
         <!-- Include Socket.IO, main communication between client to server to client -->
         <script src="/assets/socket.io.js"></script>
 
+        <!-- Include ProximityVC assets -->
+        <link rel="stylesheet" href="/assets/index.css">
+        <script src="/assets/index.js"></script>
+
         <!-- Bootstrap, JavaScript and dependencies -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
@@ -15,6 +19,14 @@
             <h1>ProximityVC</h1>
             <h5>with Socket.IO</h5>
         </div>
+
+        <!-- Wait for username -->
+        <div class="text-center">
+            <input id="nicknameinput" class="form-control text-center" placeholder="Nickname" autocomplete="off"></input>
+            <br>
+            <button class="btn btn-primary" onclick="console.log(joinvc())" id="joinvcbutton">Join VC</button>
+        </div>
+
         <div>
             <h3>Users talking:</h3>
             <ul id="userlist">
@@ -22,7 +34,4 @@
             </ul>
         </div>
     </body>
-
-    <!-- Incude ProximityVC assets -->
-    <script src="/assets/index.js"></script>
 </html>
