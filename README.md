@@ -3,9 +3,10 @@ Proximity Voice Chat with Socket.IO
 
 ### Installation
 1. Install [Node.js](https://nodejs.org/en/)
-2. `cd ProximityVC`
-3. `npm i`
-4. `node server.js` (use [forever](https://www.npmjs.com/package/forever))
+2. `git clone https://github.com/tinopai/ProximityVC.git`
+3. `cd ProximityVC`
+4. `npm i`
+5. `node server.js` (use [forever](https://www.npmjs.com/package/forever))
 
 ### TO-DO:
 1. ~~Add Join Voice Chat button and username input~~
