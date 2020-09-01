@@ -33,7 +33,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('uservoice', (dat) => {
-        if(!dat || !dat.userdata || !dat.userdata.id || !dat.userdata.user) return io.emit("servererror", "Malformed UserData");
+        if(!dat || !dat.userdata || !dat.userdata.id || !dat.userdata.user) return io.emit("servererror", "Malformed user data");
         let proximitydata = {
             success: true,
             "user": dat.userdata.user,
