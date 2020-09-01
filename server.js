@@ -16,7 +16,15 @@ let pvc = {
     },
     err: (m) => pvc.std(m, "Error", "red"),
     warn: (m) => pvc.std(m, "Warning", "yellow"),
-    log: (m) => pvc.std(m)
+    log: (m) => pvc.std(m),
+    ratelimit: {
+        users:  {
+            chat: new Map()
+        },
+        slowdown: {
+            chat: 2
+        }
+    }
 };
 
 app.get('/', (req, res) => res.sendFile(__dirname + `/public/index.html`));
@@ -33,7 +41,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('uservoice', (dat) => {
-        if(!dat || !dat.userdata || !dat.userdata.id || !dat.userdata.user) return io.emit("servererror", "Malformed user data");
+        if(!dat || !dat.userdata || !dat.userdata.id || !dat.userdata.user) return socket.emit("servererror", "Malformed user data");
+        if((new TextEncoder().encode(dat.blob)).length > 65055) return socket.emit("servererror", `Data blob is too long: ${(new TextEncoder().encode(dat.blob)).length} B`);
+
         let proximitydata = {
             success: true,
             "user": dat.userdata.user,
@@ -41,6 +51,21 @@ io.on('connection', (socket) => {
         };
         socket.broadcast.emit(`servervoice`, { 
             blob: dat.blob,
+            userdata: proximitydata
+        });
+    });
+
+    socket.on('cmessage', (dat) => {
+        if(!dat || !dat.userdata || !dat.userdata.id || !dat.userdata.user) return socket.emit("servererror", "Malformed user data");
+        if(dat.data.length > 280) return socket.emit(`Message is too long, not sending it.`);
+
+        let proximitydata = {
+            success: true,
+            "user": dat.userdata.user,
+            "id":   dat.userdata.id,
+        };
+        io.emit('cmessage', {
+            data: dat.data,
             userdata: proximitydata
         });
     });

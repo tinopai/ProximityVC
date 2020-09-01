@@ -13,6 +13,10 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+
+        <!-- FontAwesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/solid.css" integrity="sha384-TN9eFVoW87zV3Q7PfVXNZFuCwsmMwkuOTOUsyESfMS9uwDTf7yrxXH78rsXT3xf0" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/fontawesome.css" integrity="sha384-PRy/NDAXVTUcXlWA3voA+JO/UMtzWgsYuwMxjuu6DfFPgzJpciUiPwgsvp48fl3p" crossorigin="anonymous">
     </head>
     <body>
         <div class="text-center">
@@ -21,17 +25,35 @@
         </div>
 
         <!-- Wait for username -->
-        <div class="text-center">
-            <input id="nicknameinput" class="form-control text-center" placeholder="Nickname" autocomplete="off"></input>
-            <br>
-            <button class="btn btn-primary" onclick="console.log(joinvc())" id="joinvcbutton">Join VC</button>
+        <div id="onLoadDiv" class="text-center">
+            <input id="nicknameinput" class="form-control text-center" placeholder="Nickname" autocomplete="off" required></input>
+            <button class="btn btn-primary" onclick="joinvc()" id="joinvcbutton">Join</button>
         </div>
 
-        <div>
-            <h3>Users talking:</h3>
-            <ul id="userlist">
-                Loading...
-            </ul>
+        <div id="onJoinDiv" style="display: none;">
+            <div id="chatDiv">
+                <div id="chatbox">
+                    <h3>Text Chat</h3>
+                    <form class="form" onsubmit="return false">
+                        <div id="chat-elm-messages" class="form-control">
+                            
+                        </div>
+                        <input id="chatmessageinput" maxlength="280" class="form-control" autocomplete="off" placeholder="Your message...">
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <h2>Voice Chat</h2>
+                <div style="margin-left: 10px;">
+                    <button class="btn btn-primary" onclick="vcbutton('microphone')" id="mute_button"><i class="fas fa-microphone"></i> Mute</button>
+                    <button class="btn btn-primary" onclick="vcbutton('audio')" id="deafen_button"><i class="fas fa-headphones-alt"></i> Deafen</button>
+                </div>
+                <h4>Users talking:</h4>
+                <ul id="userlist">
+                    Loading...
+                </ul>
+            </div>
         </div>
     </body>
 </html>
