@@ -1,5 +1,13 @@
 /* Socket.IO */
 let socket = io();
+
+/*
+    TO-DO:
+    - Actual deafen thingy, server-side, not broadcasting the voice.
+    - Finish chat
+    - Add users in chat and mute status, should use keep-alives, etc
+*/
+
 /* Temp values */
 let tmp = {}, usersInVoiceChat = {}, joinedVC = false;
 
@@ -7,12 +15,15 @@ let pvc = {
     errors: { 
         ids: { 
             1: "Malformed user data", 
-            2: "Already joined voice chat" 
+            2: "Already joined voice chat",
+            3: "Invalid type",
+            4: "Invalid action"
         },
         builder: (tmpid) => {
             return {success:false, id: tmpid, message: pvc.errors.ids[tmpid]};
         }
-    }
+    },
+    vcstatus: {}
 }
 
 function startSendingData(tmp_userdata) {
@@ -31,16 +42,18 @@ function startSendingData(tmp_userdata) {
             mr.ondataavailable = e => this.vchunks.push(e.data);
 
             mr.onstop = e => {
-                let datablob = new Blob(this.vchunks, { 'type' : 'audio/ogg; codecs=opus' });
-                let proximitydata = {
-                    user: tmp_userdata.user,
-                    id:   tmp_userdata.id
-                };
-                socket.emit('uservoice', { 
-                    blob: datablob,
-                    userdata: proximitydata
-                });
-                usersInVoiceChat[tmp_userdata.id] = tmp_userdata.user;
+                if(pvc.vcstatus.microphone.active) {
+                    let datablob = new Blob(this.vchunks, { 'type' : 'audio/ogg; codecs=opus' });
+                    let proximitydata = {
+                        user: tmp_userdata.user,
+                        id:   tmp_userdata.id
+                    };
+                    socket.emit('uservoice', { 
+                        blob: datablob,
+                        userdata: proximitydata
+                    });
+                    usersInVoiceChat[tmp_userdata.id] = tmp_userdata.user;
+                }
             };
 
             mr.start();
@@ -59,18 +72,53 @@ function startSendingData(tmp_userdata) {
                 }
                 userlist.innerHTML = ulbuilder;
                 usersInVoiceChat = {};
-            }, 500);
+            }, 1500);
         });
 
         socket.on('servervoice', dat => {
-            blobdata = dat.blob;
-            let blob = new Blob([blobdata], { 'type' : 'audio/ogg; codecs=opus' });
-            let audio = document.createElement('audio');
-            audio.src = window.URL.createObjectURL(blob);
-            audio.play();
+            if(vcbutton.audio.active) {
+                blobdata = dat.blob;
+                let blob = new Blob([blobdata], { 'type' : 'audio/ogg; codecs=opus' });
+                let audio = document.createElement('audio');
+                audio.src = window.URL.createObjectURL(blob);
+                audio.play();
+
+                usersInVoiceChat[dat.userdata.id] = dat.userdata.user;
+            }
+        });
+
+
+        /* Chat Handler */
+        let cmi = document.getElementById('chatmessageinput');
+        let cem = document.getElementById('chat-elm-messages');
+
+        let chatHandler = (e) => {
+            if(e.code == "Enter") {
+                let proximitydata = {
+                    user: tmp_userdata.user,
+                    id:   tmp_userdata.id
+                };
+
+                if(cmi.value.length > 0 && cmi.value.length < 280) {
+                    socket.emit('cmessage', { 
+                        data: cmi.value,
+                        userdata: proximitydata
+                    });
+            
+                    cmi.value = "";
+                } else {
+                    
+                }
+            }
+        }
+
+        cmi.addEventListener('keypress', chatHandler);
+
         
-            usersInVoiceChat[dat.userdata.id] = dat.userdata.user;
-        });   
+        /* Parsing Chat */
+        socket.on('cmessage', (msg) => {
+            cem.innerHTML += `<b>${msg.userdata.user}.${msg.userdata.id}</b>: ${msg.data}<br>`;
+        });
 }
 
 function randomNum(min, max) {
@@ -104,10 +152,46 @@ let joinvc = () => {
         nicknameinput.value = `${capitalize(adjectives[Math.floor(Math.random() * adjectives.length)])} ${capitalize(nouns[Math.floor(Math.random() * nouns.length)])} ${Math.round(Math.random()) == 1 ? "Boy" : "Girl"}`;
 
     startSendingData({user: nicknameinput.value, id: tmp.id});
+
+    /* Unhide chat and vc */
+    hide(document.getElementById("onJoinDiv"));
+
     return {success:true, user: nicknameinput.value, id: tmp.id };
 }
 
-/* Parsing Chat */
-socket.on('chat message', function(msg){
-    console.log(msg);
-});
+let hide = (div) => {
+    if(div.style.display == "none")
+        div.style.display = "block";
+    else
+        div.style.display = "none";
+}
+
+// Must add window.onload, cause it uses document.getElementById
+let vcbutton;
+
+window.onload = () => {
+
+pvc.vcstatus = {
+    microphone: {
+        active: true,
+        btn_element: document.getElementById('mute_button')
+    },
+    audio: {
+        active: true,
+        btn_element: document.getElementById('deafen_button')
+    }
+};
+
+vcbutton = (type) => {
+    if(type != "microphone" && type != "audio") return pvc.errors.builder(3);
+
+    if(pvc.vcstatus[type].active) {
+        pvc.vcstatus[type].active = false;
+        pvc.vcstatus[type].btn_element.classList.add("btn-danger");
+    } else {
+        pvc.vcstatus[type].active = true;
+        pvc.vcstatus[type].btn_element.classList.remove("btn-danger");
+    }
+}
+
+};
